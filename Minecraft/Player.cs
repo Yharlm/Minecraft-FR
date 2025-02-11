@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Minecraft
         public Vector2 Pos;
         public Cordinates Cordinates;
         public Vector2 Grid_pos;
-        public float size = 5; //160
+        public float size = 3; //160
 
         
 
@@ -29,9 +30,17 @@ namespace Minecraft
     class Map
     {
         public int[,] grid;
-        public static void MapChanges() 
+        public static void MapChanges(int[,] grid) 
         {
-            grid[1, 1] = 1;
+            int counter = 0;
+            while (counter <10)
+            {
+                grid[9, counter] = 1;
+                grid[counter, 0] = 1;
+                grid[0, counter] = 1;
+                grid[counter, 9] = 1;
+                counter++;
+            }
         }
     }
 }
