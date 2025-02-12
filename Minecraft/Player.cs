@@ -16,7 +16,8 @@ namespace Minecraft
         public Cordinates Cordinates;
         public Vector2 Grid_pos;
         public float size = 3; //160
-
+        public bool is_moving = true;
+        public float gravity = 2f;
         
 
     }
@@ -41,6 +42,7 @@ namespace Minecraft
                 grid[counter, 9] = 1;
                 counter++;
             }
+            grid[9,4] = 0;
         }
     }
 }
