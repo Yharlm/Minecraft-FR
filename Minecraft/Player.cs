@@ -19,6 +19,7 @@ namespace Minecraft
         public bool is_moving = true;
         public float gravity = 2f;
         Collision collision;
+        public bool is_colliding = false;
 
         
 

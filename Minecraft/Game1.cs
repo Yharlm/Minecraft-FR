@@ -10,8 +10,8 @@ namespace Minecraft
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Instance player = new Instance();
-
+        private Instance player = new Instance();
+        bool is_colliding = false;
         private List<Instance> Workspace = new List<Instance>();
 
         public Game1()
@@ -33,14 +33,32 @@ namespace Minecraft
             CreateMap(Workspace);
 
         }
-
+        static bool Grid_pos(int y, int x, int i, int j)
+        {
+            if (y == i && x == j)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         static void CreateMap(List<Instance> WS)
         {
-           for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Instance.Instatitate(WS, WS[0].Texture, new System.Numerics.Vector2(i * 16, j * 16));
+                    if (Grid_pos(4, 0, i, j))
+                    {
+                        continue;
+                    }
+                    if (i == 0 || j == 0 || i == 9 || j == 9)
+                    {
+                        Instance.Instatitate(WS, WS[0].Texture, new System.Numerics.Vector2(i * 48 + 120, j * 48));
+                    }
+
                 }
             }
         }
@@ -60,12 +78,12 @@ namespace Minecraft
         {
 
 
-
+            
             Get_input(Workspace[0]);
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !is_pressed)
             {
                 is_pressed = true;
-                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), player.Pos);
+                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), System.Numerics.Vector2.Add(player.Pos,new System.Numerics.Vector2(0,1)));
 
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.Space))
@@ -75,28 +93,26 @@ namespace Minecraft
             if
                 (Keyboard.GetState().IsKeyDown(Keys.E))
             {
-                
+
                 Workspace[0].Color = System.Drawing.Color.Red;
             }
             base.Update(gameTime);
             foreach (Instance instance in Workspace)
             {
-                foreach( Instance instance1 in Workspace)
-                {
-                    if(instance == instance1)
-                    {
-                        continue;
-                    }
-                    if (Collision.Collide(new Collision(instance1), new Collision(instance)))
+
+                if (instance != Workspace[0])
+                    if (Collision.Collide(new Collision(Workspace[0]), new Collision(instance)))
                     {
 
-                        player.Pos.X = 0f ;
-                        player.Pos.Y = 0f;
+                        System.Numerics.Vector2 direction = instance.Pos - Workspace[0].Pos;
+                        direction= System.Numerics.Vector2.Normalize(direction);
+                        Workspace[0].Pos = System.Numerics.Vector2.Subtract(Workspace[0].Pos, direction);
+                        
+
                     }
-                }
             }
         }
-
+        float speed = 2;
         static void Get_input(Instance plr)
         {
             float speed = 5;
@@ -116,7 +132,7 @@ namespace Minecraft
             {
                 plr.Pos.X += speed;
             }
-            
+
 
 
         }
@@ -131,7 +147,7 @@ namespace Minecraft
             _spriteBatch.End();
             foreach (Instance instance in Workspace)
             {
-                
+
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
                 _spriteBatch.Draw(instance.Texture, instance.Pos, null, Color.White, instance.orientation, Vector2.Zero, instance.Size, SpriteEffects.None, 0f);
                 _spriteBatch.End();
