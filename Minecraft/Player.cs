@@ -20,7 +20,7 @@ namespace Minecraft
         public float gravity = 2f;
         Collision collision;
         public bool is_colliding = false;
-
+        public float speed = 5f;
         
 
     }

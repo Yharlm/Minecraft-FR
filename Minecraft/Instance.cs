@@ -26,6 +26,7 @@ namespace Minecraft
             instance.Texture = texture;
             instance.Pos = pos;
             Workspace.Add(instance);
+            bool is_colliding = false;
         }
 
         
@@ -39,14 +40,25 @@ namespace Minecraft
         public static bool Collide(Collision obj1,Collision obj2)
         {
             
-            if(obj1.margin1.X < obj2.margin2.X && obj1.margin2.X > obj2.margin1.X && obj1.margin1.Y < obj2.margin2.Y && obj1.margin2.Y > obj2.margin1.Y)
+            if (obj1.margin1.X <= obj2.margin2.X && obj1.margin2.X >= obj2.margin1.X && obj1.margin1.Y <= obj2.margin2.Y && obj1.margin2.Y >= obj2.margin1.Y )
             {
+                
                 return true;
             }
             else
             {
+                if (obj1.margin1.Y == obj2.margin1.Y && obj1.margin1.X == obj2.margin1.X)
+                {
+                    return true;
+                }
+                if (obj1.margin2.Y == obj2.margin2.Y && obj1.margin2.X == obj2.margin2.X)
+                {
+                    return true;
+                }
                 return false;
             }
         }
+
+        
     }
 }
