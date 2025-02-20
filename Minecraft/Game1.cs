@@ -33,7 +33,7 @@ namespace Minecraft
             Dirt.Texture = Content.Load<Texture2D>("dirt");
             Items.Add(Dirt);
             Workspace.Add(player);
-
+            Workspace[0].collider_size +=1;
             CreateMap(Workspace, Items);
             
 
@@ -87,9 +87,9 @@ namespace Minecraft
         bool is_pressed = false;
         protected override void Update(GameTime gameTime)
         {
-
-
-
+            
+            
+            Workspace[0].Pos.Y += gravity;
             Get_input(Workspace[0], Player);
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !is_pressed)
             {
@@ -155,7 +155,7 @@ namespace Minecraft
             }
             else
             {
-                player.speed = 5;
+                player.speed = 3;
             }
             float speed = player.speed;
             if (Keyboard.GetState().IsKeyDown(Keys.W))

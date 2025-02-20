@@ -21,15 +21,15 @@ namespace Minecraft
         Collision collision;
         public bool is_colliding = false;
         public float speed = 5f;
-        
+
 
     }
 
-    class Cordinates(int x,int y)
+    class Cordinates(int x, int y)
     {
         public int X = x;
         public int Y = y;
     }
 
-    
+
 }

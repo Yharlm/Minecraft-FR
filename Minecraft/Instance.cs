@@ -29,20 +29,20 @@ namespace Minecraft
             bool is_colliding = false;
         }
 
-        
+
     }
 
     class Collision(Instance obj)
-    { 
+    {
         Vector2 margin1 = new Vector2(obj.Pos.X, obj.Pos.Y);
         Vector2 margin2 = new Vector2(obj.Pos.X + obj.collider_size, obj.Pos.Y + obj.collider_size);
 
-        public static bool Collide(Collision obj1,Collision obj2)
+        public static bool Collide(Collision obj1, Collision obj2)
         {
-            
-            if (obj1.margin1.X <= obj2.margin2.X && obj1.margin2.X >= obj2.margin1.X && obj1.margin1.Y <= obj2.margin2.Y && obj1.margin2.Y >= obj2.margin1.Y )
+
+            if (obj1.margin1.X <= obj2.margin2.X && obj1.margin2.X >= obj2.margin1.X && obj1.margin1.Y <= obj2.margin2.Y && obj1.margin2.Y >= obj2.margin1.Y)
             {
-                
+
                 return true;
             }
             else
@@ -59,6 +59,6 @@ namespace Minecraft
             }
         }
 
-        
+
     }
 }
