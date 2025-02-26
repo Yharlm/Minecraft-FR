@@ -159,7 +159,7 @@ namespace Minecraft
             }
             else
             {
-                player.speed = 5;
+                player.speed = 3;
             }
             float speed = player.speed;
             if (Keyboard.GetState().IsKeyDown(Keys.W))
