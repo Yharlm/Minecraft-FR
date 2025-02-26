@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Minecraft
 {
@@ -15,12 +14,13 @@ namespace Minecraft
         bool is_colliding = false;
         private List<Instance> Workspace = new List<Instance>();
         private List<Instance> Items = new List<Instance>();
+        int[,] grid = new int[20, 20];
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            
+
 
         }
 
@@ -33,9 +33,13 @@ namespace Minecraft
             Dirt.Texture = Content.Load<Texture2D>("dirt");
             Items.Add(Dirt);
             Workspace.Add(player);
+            Instance Grass = new Instance();
+            Grass.Texture = Content.Load<Texture2D>("Grass_block");
+            Items.Add(Grass);
+            Workspace.Add(player);
 
-            CreateMap(Workspace, Items);
-            
+            CreateMap(Workspace, Items,grid);
+
 
 
         }
@@ -50,24 +54,20 @@ namespace Minecraft
                 return false;
             }
         }
-        static void CreateMap(List<Instance> WS,List<Instance> Items)
+        static void CreateMap(List<Instance> WS, List<Instance> Items, int[,] grid)
         {
-            for (int j = 4; j < 9; j++)
-            {
-                Instance.Instatitate(WS, Items[0].Texture, new System.Numerics.Vector2(j * 48 + 120, 48));
-            }
+            //for (int j = 4; j < 9; j++)
+            //{
+            //    Instance.Instatitate(WS, Items[1].Texture, new System.Numerics.Vector2(j * 48 + 120, 48));
+            //}
 
-                for (int i = 5; i < 9; i++)
+            for (int i = 5; i < grid.GetLength(0); i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < grid.GetLength(1); j++)
                 {
-                    //if (Grid_pos(4, 0, i, j))
-                    //{
-                    //    continue;
-                    //}
-                    //if (i == 0 || j == 0 || i == 9 || j == 9)
+                    int id = grid[i, j];
                     {
-                        Instance.Instatitate(WS, Items[0].Texture, new System.Numerics.Vector2(j * 48 + 120, i * 48));
+                        Instance.Instatitate(WS, Items[id].Texture, new System.Numerics.Vector2(j * 48 + 120, i * 48));
                     }
 
                 }
@@ -81,13 +81,13 @@ namespace Minecraft
             player.Texture = Dirt;
 
 
+
             // TODO: use this.Content to load your game content here
         }
 
         bool is_pressed = false;
         protected override void Update(GameTime gameTime)
         {
-
 
 
             Get_input(Workspace[0], Player);
@@ -113,34 +113,38 @@ namespace Minecraft
 
                 if (instance != Workspace[0])
                 {
-                    System.Numerics.Vector2 margin2 = new System.Numerics.Vector2(Workspace[0].Pos.X + Workspace[0].collider_size, Workspace[0].Pos.Y + Workspace[0].collider_size);
-                    System.Numerics.Vector2 margin1 = new System.Numerics.Vector2(instance.Pos.X + instance.collider_size, instance.Pos.Y + instance.collider_size);
-
-                    if (Collision.Collide(new Collision(Workspace[0]), new Collision(instance)) || Keyboard.GetState().IsKeyDown(Keys.E))
+                    System.Numerics.Vector2 margin2 = new System.Numerics.Vector2(Workspace[0].Pos.X + Workspace[0].collider_size / 2, Workspace[0].Pos.Y + Workspace[0].collider_size / 2);
+                    System.Numerics.Vector2 margin1 = new System.Numerics.Vector2(instance.Pos.X + instance.collider_size / 2, instance.Pos.Y + instance.collider_size / 2);
+                    while (true)
                     {
-                        float speed = 3;
-                        is_colliding = true;
-                        if (Workspace[0].Pos.X < instance.Pos.X)
+                        if (Collision.Collide(new Collision(Workspace[0]), new Collision(instance)) || Keyboard.GetState().IsKeyDown(Keys.E))
                         {
-                            Workspace[0].Pos.X -= speed;
+                            //float speed = 3;
+                            is_colliding = true;
+                            
                         }
-                        if (Workspace[0].Pos.X > instance.Pos.X)
+                        else
                         {
-                            Workspace[0].Pos.X += speed;
-                        }
-                        if (Workspace[0].Pos.Y < instance.Pos.Y)
-                        {
-                            Workspace[0].Pos.Y -= speed;
-                        }
-                        if (Workspace[0].Pos.Y > instance.Pos.Y)
-                        {
-                            Workspace[0].Pos.Y += speed;
+                            is_colliding = false;
+                            break;
                         }
 
-                    }
-                    else
-                    {
-                        is_colliding = false;
+                        if (margin1.X < margin2.X)
+                        {
+                            Workspace[0].Pos.X += 1;
+                        }
+                        if (margin1.X > margin2.X)
+                        {
+                            Workspace[0].Pos.X -= 1;
+                        }
+                        if (margin1.Y < margin2.Y)
+                        {
+                            Workspace[0].Pos.Y += 1;
+                        }
+                        if (margin1.Y > margin2.Y)
+                        {
+                            Workspace[0].Pos.Y -= 1;
+                        }
                     }
 
                 }
@@ -149,7 +153,7 @@ namespace Minecraft
 
         static void Get_input(Instance plr, Player player)
         {
-            if(player.is_colliding == true)
+            if (player.is_colliding == true)
             {
                 player.speed = 0;
             }
@@ -182,7 +186,7 @@ namespace Minecraft
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            System.Numerics.Vector2 camera_pos = new System.Numerics.Vector2(player.Pos.X, player.Pos.Y);
             // TODO: Add your drawing code here
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _spriteBatch.Draw(Workspace[0].Texture, Workspace[0].Pos, null, Color.White, 0f, Vector2.Zero, Workspace[0].Size, SpriteEffects.None, 0f);
@@ -191,9 +195,12 @@ namespace Minecraft
             {
 
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                _spriteBatch.Draw(instance.Texture, instance.Pos, null, Color.White, instance.orientation, Vector2.Zero, instance.Size, SpriteEffects.None, 0f);
+                _spriteBatch.Draw(instance.Texture, instance.Pos + camera_pos, null, Color.White, instance.orientation, Vector2.Zero, instance.Size, SpriteEffects.None, 0f);
                 _spriteBatch.End();
             }
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            _spriteBatch.DrawString(Content.Load<SpriteFont>("File"), "X: " + Workspace[0].Pos.X + " Y: " + Workspace[0].Pos.Y, new Vector2(0, 0), Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
