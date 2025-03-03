@@ -12,6 +12,7 @@ namespace Minecraft
 {
     internal class Instance
     {
+        public bool anchored = true;
         public Vector2 Pos;
         public Color Color;
         public float Size = 3; //160
