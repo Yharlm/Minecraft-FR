@@ -87,15 +87,16 @@ namespace Minecraft
         bool is_pressed = false;
         protected override void Update(GameTime gameTime)
         {
-            
-            
-            Workspace[0].Pos.Y += gravity;
+
+
+            float mouseposX = Mouse.GetState().X;
+            float mouseposY = Mouse.GetState().Y;
             Get_input(Workspace[0], Player);
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !is_pressed)
             {
                 is_pressed = true;
-                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), System.Numerics.Vector2.Add(player.Pos, new System.Numerics.Vector2(0, 1)));
-
+                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), new System.Numerics.Vector2(mouseposX - Workspace[0].collider_size/2, mouseposY - Workspace[0].collider_size / 2));
+                
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.Space))
             {
@@ -158,6 +159,7 @@ namespace Minecraft
                 player.speed = 3;
             }
             float speed = player.speed;
+            plr.Pos.Y += speed;
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
                 plr.Pos.Y -= speed;
@@ -174,6 +176,7 @@ namespace Minecraft
             {
                 plr.Pos.X += speed;
             }
+            
 
 
 
@@ -182,7 +185,9 @@ namespace Minecraft
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(Content.Load<SpriteFont>("File"), Mouse.GetState().Position.ToString(),Vector2.Zero,Color.Wheat);
+            _spriteBatch.End();
             // TODO: Add your drawing code here
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _spriteBatch.Draw(Workspace[0].Texture, Workspace[0].Pos, null, Color.White, 0f, Vector2.Zero, Workspace[0].Size, SpriteEffects.None, 0f);
