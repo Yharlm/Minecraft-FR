@@ -95,8 +95,8 @@ namespace Minecraft
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !is_pressed)
             {
                 is_pressed = true;
-                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), System.Numerics.Vector2.Add(player.Pos, new System.Numerics.Vector2(0, 1)));
-
+                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), new System.Numerics.Vector2(mouseposX - Workspace[0].collider_size/2, mouseposY - Workspace[0].collider_size / 2));
+                
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.Space))
             {
@@ -161,7 +161,7 @@ namespace Minecraft
             {
                 plr.Pos.X += speed;
             }
-
+            
 
 
 
