@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Minecraft
 {
@@ -11,7 +12,7 @@ namespace Minecraft
         private SpriteBatch _spriteBatch;
         Player Player = new Player();
         private Instance player = new Instance();
-        bool is_colliding = false;
+        public bool is_colliding = false;
         private List<Instance> Workspace = new List<Instance>();
         private List<Instance> Items = new List<Instance>();
         int[,] grid = new int[20, 20];
@@ -38,7 +39,7 @@ namespace Minecraft
             Items.Add(Grass);
             Workspace.Add(player);
 
-            CreateMap(Workspace, Items,grid);
+            CreateMap(Workspace, Items, grid);
 
 
 
@@ -90,7 +91,7 @@ namespace Minecraft
         {
 
 
-            Get_input(Workspace[0], Player);
+
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !is_pressed)
             {
                 is_pressed = true;
@@ -108,6 +109,7 @@ namespace Minecraft
                 Workspace[0].Color = System.Drawing.Color.Red;
             }
             base.Update(gameTime);
+            bool collison = false;
             foreach (Instance instance in Workspace)
             {
 
@@ -115,69 +117,51 @@ namespace Minecraft
                 {
                     System.Numerics.Vector2 margin2 = new System.Numerics.Vector2(Workspace[0].Pos.X + Workspace[0].collider_size / 2, Workspace[0].Pos.Y + Workspace[0].collider_size / 2);
                     System.Numerics.Vector2 margin1 = new System.Numerics.Vector2(instance.Pos.X + instance.collider_size / 2, instance.Pos.Y + instance.collider_size / 2);
-                    while (true)
+                    //while (true)
+                    //{
+                    Collider collider = new Collider();
+                    if(Collision.Collide(new Collision(Workspace[0]), new Collision(instance)))
                     {
-                        if (Collision.Collide(new Collision(Workspace[0]), new Collision(instance)) || Keyboard.GetState().IsKeyDown(Keys.E))
-                        {
-                            //float speed = 3;
-                            is_colliding = true;
-                            
-                        }
-                        else
-                        {
-                            is_colliding = false;
-                            break;
-                        }
-
-                        if (margin1.X < margin2.X)
-                        {
-                            Workspace[0].Pos.X += 1;
-                        }
-                        if (margin1.X > margin2.X)
-                        {
-                            Workspace[0].Pos.X -= 1;
-                        }
-                        if (margin1.Y < margin2.Y)
-                        {
-                            Workspace[0].Pos.Y += 1;
-                        }
-                        if (margin1.Y > margin2.Y)
-                        {
-                            Workspace[0].Pos.Y -= 1;
-                        }
+                        
+                        Workspace[0].collider = Collision.CollideSide(new Collision(Workspace[0]), new Collision(instance));
                     }
+                    
+
+
+
+                    //}
 
                 }
             }
+            Get_input(Workspace[0], Player, collison);
         }
 
-        static void Get_input(Instance plr, Player player)
+        static void Get_input(Instance plr, Player player, bool col)
         {
-            if (player.is_colliding == true)
-            {
-                player.speed = 0;
-            }
-            else
-            {
-                player.speed = 3;
-            }
+
+            
+
+
+
             float speed = player.speed;
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !plr.collider.sideC)
             {
                 plr.Pos.Y -= speed;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            if (Keyboard.GetState().IsKeyDown(Keys.S) && !plr.collider.sideA)
             {
                 plr.Pos.Y += speed;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            if (Keyboard.GetState().IsKeyDown(Keys.A) && !plr.collider.sideD)
             {
                 plr.Pos.X -= speed;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            if (Keyboard.GetState().IsKeyDown(Keys.D) && !plr.collider.sideB)
             {
                 plr.Pos.X += speed;
             }
+
 
 
 
@@ -193,9 +177,9 @@ namespace Minecraft
             _spriteBatch.End();
             foreach (Instance instance in Workspace)
             {
-
+                if (instance == Workspace[0]) continue;
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                _spriteBatch.Draw(instance.Texture, instance.Pos + camera_pos, null, Color.White, instance.orientation, Vector2.Zero, instance.Size, SpriteEffects.None, 0f);
+                _spriteBatch.Draw(instance.Texture, instance.Pos + camera_pos * 0, null, Color.White, instance.orientation, Vector2.Zero, instance.Size, SpriteEffects.None, 0f);
                 _spriteBatch.End();
             }
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);

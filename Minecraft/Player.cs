@@ -18,7 +18,8 @@ namespace Minecraft
         public float size = 5; //160
         public bool is_moving = true;
         public float gravity = 2f;
-        Collision collision;
+        public Collision collision;
+        public bool grounded = false;
         public bool is_colliding = false;
         public float speed = 5f;
 
