@@ -12,6 +12,7 @@ namespace Minecraft
 {
     internal class Instance
     {
+        public bool is_colliding = false;
         public bool anchored = true;
         public Vector2 Pos;
         public Color Color;
