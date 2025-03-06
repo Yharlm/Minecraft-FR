@@ -18,6 +18,7 @@ namespace Minecraft
         private List<Instance> Workspace = new List<Instance>();
         private List<Instance> Items = new List<Instance>();
         int[,] grid = new int[20, 20];
+        public System.Numerics.Vector2 camera_pos = new System.Numerics.Vector2(0,0);
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -93,14 +94,14 @@ namespace Minecraft
         protected override void Update(GameTime gameTime)
         {
 
-            
 
+            
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 float mouseposX = Mouse.GetState().Position.X;
                 float mouseposY = Mouse.GetState().Position.Y;
                 is_pressed = true;
-                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), new System.Numerics.Vector2(mouseposX - Workspace[0].collider_size/2, mouseposY - Workspace[0].collider_size / 2));
+                Instance.Instatitate(Workspace, Content.Load<Texture2D>("dirt"), new System.Numerics.Vector2(mouseposX - Workspace[0].collider_size/2, mouseposY - Workspace[0].collider_size / 2) + camera_pos);
                 
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.Space))
@@ -137,16 +138,22 @@ namespace Minecraft
                         {
                             //float speed = 3;
                             is_colliding = true;
-                            Workspace[0].is_colliding = is_colliding;
+                            Workspace[0].is_colliding = true;
                         }
-                        else
+                        else if(is_colliding)
                         {
-                            is_colliding = false;
-                            Workspace[0].is_colliding = false;
+                            if (!Collision.Collide(new Collision(Workspace[0]), new Collision(instance)))
+                            {
+                                //float speed = 3;
+                                is_colliding = false;
+                                Workspace[0].is_colliding = false;
+                            }
+                            //is_colliding = false;
+                            //Workspace[0].is_colliding = false;
                             break;
                         }
-                        float densityX =float.Abs(margin1.X - margin2.X)/22;
-                        float densityY = float.Abs(margin1.Y - margin2.Y)/1122;
+                        float densityX =float.Abs(margin1.X - margin2.X)/122;
+                        float densityY = float.Abs(margin1.Y - margin2.Y)/122;
 
                         if (margin1.X < margin2.X)
                         {
@@ -170,37 +177,55 @@ namespace Minecraft
 
                 }
             }
-            Get_input(Workspace[0], Player, collison);
+            
+            Get_input(Workspace[0], Player, collison,camera_pos);
         }
 
-        static void Get_input(Instance plr, Player player, bool col)
+        static void Get_input(Instance plr, Player player, bool col,Vector2 camera)
         {
-            float gravity = 0;
+            float gravity = 5;
+            if(player.player_jumped == true)
+            {
+                plr.Pos.Y += gravity;
+            }
             
-            if (!plr.is_colliding) 
-            {  gravity = 5; }
             
-            
-            plr.Pos.Y += gravity;
+            if (plr.is_colliding)
+            {
+                player.Pos = System.Numerics.Vector2.Zero;
+                player.player_jumped = false;
+                player.jump_time = 100;
+            }
 
 
             float speed = player.speed;
-
+            
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
+                
                 plr.Pos.Y -= speed;
+                camera.X -= speed;
+                player.jump_time--;
+            }
+            if(player.jump_time <= 0)
+            {
+                player.player_jumped = true;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                plr.Pos.Y += speed*2;
+                
+                plr.Pos.Y+= speed * 2;
+                camera.X += speed * 2;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 plr.Pos.X -= speed;
+                camera.Y -= speed;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 plr.Pos.X += speed;
+                camera.Y -= speed;
             }
             
 
@@ -211,17 +236,26 @@ namespace Minecraft
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            System.Numerics.Vector2 camera_pos = new System.Numerics.Vector2(player.Pos.X, player.Pos.Y);
+            
             // TODO: Add your drawing code here
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _spriteBatch.Draw(Workspace[0].Texture, Workspace[0].Pos, null, Color.White, 0f, Vector2.Zero, Workspace[0].Size, SpriteEffects.None, 0f);
+            if (Workspace[0].is_colliding)
+            {
+                _spriteBatch.Draw(Workspace[0].Texture, player.Pos, null, Color.Red, 0f, Vector2.One, Workspace[0].Size, SpriteEffects.None, 0f);
+
+            }
+            else
+            {
+                _spriteBatch.Draw(Workspace[0].Texture, player.Pos, null, Color.White, 0f, Vector2.One, Workspace[0].Size, SpriteEffects.None, 0f);
+
+            }
             _spriteBatch.End();
             foreach (Instance instance in Workspace)
             {
                 
                 if (instance == Workspace[0]) continue;
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                _spriteBatch.Draw(instance.Texture, instance.Pos + camera_pos * 0, null, Color.White, instance.orientation, Vector2.Zero, instance.Size, SpriteEffects.None, 0f);
+                _spriteBatch.Draw(instance.Texture, instance.Pos + camera_pos, null, Color.White, instance.orientation, Vector2.One, instance.Size, SpriteEffects.None, 0f);
                 _spriteBatch.End();
             }
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);

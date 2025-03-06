@@ -22,6 +22,8 @@ namespace Minecraft
         public bool grounded = false;
         public bool is_colliding = false;
         public float speed = 5f;
+        public bool player_jumped = false;
+        public float jump_time = 100f;
 
 
     }
